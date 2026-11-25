@@ -1,6 +1,6 @@
 # CoffeeBuddy Lab
 
-Citaly 咖啡机的可视化仪表盘：纯白编辑风 + 冰箱贴风饮品卡片。
+Citaly 咖啡机的可视化仪表盘：纯白编辑风 + 冰箱贴风饮品卡片。支持任意 MCP agent（Kimi Work / WorkBuddy / Codex 等）接入真机冲煮，机器自动发现，零写死配置。
 
 ## 功能
 

@@ -2,19 +2,9 @@
 
 把 CoffeeBuddy Lab 跑在自己的 Citaly 咖啡机上，只需要三步：改配置 → 起服务 → 连 agent。
 
-## 第 0 步：改两行配置（必做）
+## 第 0 步：改配置（可跳过）
 
-编辑 `js/data.js`：
-
-```js
-const MACHINE = {
-  id: "你的设备ID",        // ← 改成你自己的
-  name: "你的机器名字",     // ← 随便起
-  ...
-};
-```
-
-设备 ID 在 CoffeeBuddy App 里「设备信息」页可以看到。
+编辑 `js/data.js` 里的 `MACHINE`（设备 ID 在 CoffeeBuddy App「设备信息」页可以看到）。不改也能跑：执行器会自动发现你账号下绑定的咖啡机，多台机器时才需要指定。
 
 ## 第 1 步：起桥接服务（必做）
 
@@ -31,16 +21,16 @@ python3 server.py   # 打开 http://127.0.0.1:7100
 
 ### 路径 A：对话直控（任何 MCP 客户端，最省心）
 
-适合 Codex、WorkBuddy 等没有定时任务的平台。
+适合 Codex、WorkBuddy 等没有定时任务的平台。机器自动发现，无需填设备 ID。
 
 1. 在 agent 里添加 MCP 服务 `https://cmap.citaly.com/mcp`，完成 OAuth 登录
 2. 用六位配对码绑定自己的机器（在机器的配对界面找）
 3. 粘贴这段启动词：
 
 ```
-你是我的咖啡机助手。我用的是 Citaly 咖啡机，设备 ID 填你绑定的。
+你是我的咖啡机助手。我的 Citaly 咖啡机已绑定在 coffeebuddy 里。
 我说「冲一杯 XX」时：
-1. get_device_context 检查机器在线、空闲、就绪（ready=true 且无 blockers），不通过就告诉我原因
+1. list_devices 找到我的机器（只有一台就直接用），get_device_context 检查在线、空闲、就绪（ready=true 且无 blockers），不通过就告诉我原因
 2. prepare_brew（recipe_key 用菜单里的名字，如 espresso；自定义配方我再给你 JSON）
 3. 等我确认杯子放好，start_brew 开始
 4. 每 3 秒 get_command_result 报进度，完成后告诉我用时
@@ -54,7 +44,7 @@ python3 server.py   # 打开 http://127.0.0.1:7100
 适合 Kimi Work、WorkBuddy 等支持定时任务 + MCP 的平台。
 
 1. 在 agent 平台添加 coffeebuddy 服务（同路径 A 的第 1、2 步）
-2. 新建定时任务：每分钟执行，提示词用 [`docs/executor-prompt.md`](./executor-prompt.md) 的内容（把 `DEVICE_ID` 换成自己的）
+2. 新建定时任务：每分钟执行，提示词直接粘贴 [`docs/executor-prompt.md`](./executor-prompt.md) 里的代码块（无需修改，机器自动发现）
 3. 若定时任务有「工作目录」设置，设为项目根目录；没有的话，把提示词里所有 `bridge/` 相对路径改成项目根的绝对路径
 4. 页面点「真机冲煮」→ 确认杯子 → 等进度遮罩走完
 
@@ -75,7 +65,7 @@ url = "https://cmap.citaly.com/mcp"
 3. crontab 加一条（把路径换成你的项目路径）：
 
 ```
-* * * * * cd /你的路径/coffee-lab && codex exec --sandbox read-only "按 docs/executor-prompt.md 的步骤执行一轮队列消费，DEVICE_ID 用已绑定的机器" >> /tmp/coffee-executor.log 2>&1
+* * * * * cd /你的路径/coffee-lab && codex exec --sandbox read-only "你是 CoffeeBuddy Lab 真机冲煮执行器。严格按 docs/executor-prompt.md 的【执行器提示词】执行一轮队列消费，机器自动发现，不要有多余动作。" >> /tmp/coffee-executor.log 2>&1
 ```
 
 页面体验和路径 B 一致。
