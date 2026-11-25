@@ -82,8 +82,12 @@ function applyFrontLayers() {
     for (const side of ["left", "right", "top", "bottom"]) {
       front.style.setProperty(`--block-${side}`, box[side] + "%");
     }
-    $("#m-cup").src = layer.cup;
-    $("#m-scatter").src = layer.scatter;
+    const cupUrl = new URL(layer.cup, document.baseURI).href;
+    const scatterUrl = new URL(layer.scatter, document.baseURI).href;
+    $("#m-cup").src = cupUrl;
+    $("#m-scatter").src = scatterUrl;
+    $("#m-cup-glaze").style.setProperty("--glaze-img", `url("${cupUrl}")`);
+    $("#m-scatter-glaze").style.setProperty("--glaze-img", `url("${scatterUrl}")`);
     front.style.setProperty("--block-img", `url("${new URL(currentDrink.blockImg, document.baseURI).href}")`);
     playAssemble();
   } else {
@@ -96,13 +100,11 @@ function applyFrontLayers() {
 
 /* 装配动效：卡片落位后，杯子先落下，散落元素随后落下（悬浮不做任何调整） */
 function playAssemble() {
-  const cup = $("#m-cup"), scatter = $("#m-scatter");
-  [cup, scatter].forEach((el) => { el.classList.remove("drop"); el.style.animationDelay = ""; });
-  void cup.offsetWidth;
-  cup.style.animationDelay = ".18s";
-  cup.classList.add("drop");
-  scatter.style.animationDelay = ".5s";
-  scatter.classList.add("drop");
+  const cups = $$("#m-cup,#m-cup-glaze"), scatters = $$("#m-scatter,#m-scatter-glaze");
+  [...cups, ...scatters].forEach((el) => { el.classList.remove("drop"); el.style.animationDelay = ""; });
+  void cups[0].offsetWidth;
+  cups.forEach((el) => { el.style.animationDelay = ".18s"; el.classList.add("drop"); });
+  scatters.forEach((el) => { el.style.animationDelay = ".5s"; el.classList.add("drop"); });
 }
 
 function renderCaption() {
