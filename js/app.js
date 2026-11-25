@@ -410,7 +410,7 @@ function renderBrewCurve(drink, progress) {
 
 function updateRealOverlay(drink, s) {
   const tag = $("#brew-tag"), step = $("#bm-step");
-  if (s.state === "queued") { tag.textContent = "真机 · 排队中"; step.textContent = "排队中 · 等待调度"; }
+  if (s.state === "queued") { tag.textContent = "真机 · 排队中"; step.textContent = "排队中 · 最迟 1 分钟内开始"; }
   else if (s.state === "claimed") { tag.textContent = "真机 · 已接单"; step.textContent = "已接单 · 连接机器"; }
   else if (s.state === "preparing") { tag.textContent = "真机"; step.textContent = s.detail || "预备冲煮方案"; }
   else if (s.state === "brewing") {
