@@ -94,7 +94,7 @@ main{padding-top:70px}
 .m-scatter.glaze{z-index:4;}
 .m-cup.glaze,.m-scatter.glaze{
   pointer-events:none;
-  background:linear-gradient(112deg,transparent 38%,rgba(255,255,255,.58) 47%,rgba(255,232,196,.42) 50%,rgba(255,255,255,.24) 53%,transparent 62%);
+  background:linear-gradient(112deg,transparent 38%,rgba(255,255,255,.29) 47%,rgba(255,232,196,.21) 50%,rgba(255,255,255,.12) 53%,transparent 62%);
   background-size:260% 100%;
   -webkit-mask-image:var(--glaze-img);mask-image:var(--glaze-img);
   -webkit-mask-size:100% 100%;mask-size:100% 100%;
