@@ -358,9 +358,9 @@ async function brewReal(drink) {
 function openRealOverlay(drink, jobId) {
   realJob = { id: jobId, drink, started: Date.now() };
   $("#brew-title").textContent = `${drink.name} · ${drink.cn}`;
-  $("#brew-tag").textContent = "真机 · 排队中";
+  $("#brew-tag").textContent = "真机 · 待开始";
   $("#brew-bar").style.width = "0";
-  $("#bm-step").textContent = "排队中";
+  $("#bm-step").textContent = "已排队 · 对聊天窗口说「开始」";
   $("#bm-temp").textContent = "—";
   $("#bm-time").textContent = "00:00";
   $("#cup-fill").style.opacity = "0";
@@ -410,7 +410,7 @@ function renderBrewCurve(drink, progress) {
 
 function updateRealOverlay(drink, s) {
   const tag = $("#brew-tag"), step = $("#bm-step");
-  if (s.state === "queued") { tag.textContent = "真机 · 排队中"; step.textContent = "排队中 · 最迟 1 分钟内开始"; }
+  if (s.state === "queued") { tag.textContent = "真机 · 待开始"; step.textContent = "已排队 · 对聊天窗口说「开始」"; }
   else if (s.state === "claimed") { tag.textContent = "真机 · 已接单"; step.textContent = "已接单 · 连接机器"; }
   else if (s.state === "preparing") { tag.textContent = "真机"; step.textContent = s.detail || "预备冲煮方案"; }
   else if (s.state === "brewing") {

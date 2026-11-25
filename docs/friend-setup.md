@@ -21,25 +21,25 @@ python3 server.py   # 打开 http://127.0.0.1:7100
 
 所有路径都依赖同一个 coffeebuddy MCP 服务：`https://cmap.citaly.com/mcp`（Streamable HTTP + OAuth，首次连接会引导登录你自己的 CoffeeBuddy 账号）。
 
-### 路径 A：对话直控（任何 MCP 客户端，最省心）
+### 路径 A：当前聊天执行（推荐，任意 agent 零配置）
 
-适合 Codex、WorkBuddy 等没有定时任务的平台。机器自动发现，无需填设备 ID。
+HTML 负责交互和参数，当前聊天窗口负责冲泡分发——页面调好参数点「真机冲煮」后，回聊天说一句「开始」即可，进度实时回传页面。也支持直接说「冲一杯浓缩」下单。机器自动发现，无需填设备 ID。
 
 1. 在 agent 里添加 MCP 服务 `https://cmap.citaly.com/mcp`，完成 OAuth 登录
 2. 用六位配对码绑定自己的机器（在机器的配对界面找）
-3. 粘贴这段启动词：
+3. 粘贴这段启动词（一次即可，之后长期有效）：
 
 ```
-你是我的咖啡机助手。我的 Citaly 咖啡机已绑定在 coffeebuddy 里。
-我说「冲一杯 XX」时：
-1. list_devices 找到我的机器（只有一台就直接用），get_device_context 检查在线、空闲、就绪（ready=true 且无 blockers），不通过就告诉我原因
-2. prepare_brew（recipe_key 用菜单里的名字，如 espresso；自定义配方我再给你 JSON）
-3. 等我确认杯子放好，start_brew 开始
-4. 每 3 秒 get_command_result 报进度，完成后告诉我用时
-安全要求：任何提交不确定时只重查不重复提交。
+你是我的咖啡机助手。我的 Citaly 咖啡机已绑定在 coffeebuddy 里。项目目录在 <你的项目绝对路径>。
+
+两种用法：
+A. 队列模式：我已在页面（项目目录起的 http://127.0.0.1:7100）调好参数并点了「真机冲煮」，任务在 bridge/queue.jsonl 里。
+   我说「开始」时：读取队列认领第一条 pending job，严格按 docs/executor-prompt.md 的【第 3 步】到【第 7 步】执行（机器发现与预检 → prepare_brew → start_brew → 每 3 秒查进度写入 bridge/status.json → 终态）。页面会实时显示进度。
+B. 直点模式：我说「冲一杯 XX」时：list_devices 找到我的机器（只有一台就直接用），get_device_context 预检（在线、空闲、ready=true 且无 blockers），prepare_brew（recipe_key 用菜单名），等我确认杯子放好再 start_brew，然后每 3 秒 get_command_result 报进度。
+安全要求：任何提交不确定时只重查不重复提交；任务认领后必须在 status.json 写进度；只冲队列里有的或我点名的饮品。
 ```
 
-之后说「冲一杯浓缩」即可。
+之后：页面点按钮 → 回来说「开始」；或随口说「冲一杯浓缩」。
 
 ### 路径 B：agent 自带定时任务（页面点按钮全自动）
 
