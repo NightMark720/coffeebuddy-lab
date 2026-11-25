@@ -72,11 +72,20 @@ function switchDrink(i) {
 
 /* 正面呈现：有 layer 素材的饮品走分层磁贴，其余保持整张封面 */
 function applyFrontLayers() {
-  const layered = !!currentDrink.layers;
-  $("#magnet").hidden = !layered;
-  $("#cover-img").style.display = layered ? "none" : "";
-  if (layered) {
-    $("#magnet").style.setProperty("--block", currentDrink.block || "#bc3a1d");
+  const layer = currentDrink.layer;
+  $("#card-front").style.setProperty("--label-bottom", (layer?.labelBottom || 9.5) + "%");
+  $("#magnet").hidden = !layer;
+  $("#cover-img").style.display = layer ? "none" : "";
+  if (layer) {
+    const magnet = $("#magnet");
+    $("#m-cup").src = layer.cup;
+    $("#m-scatter").src = layer.scatter;
+    magnet.style.setProperty("--block-img", `url("${new URL(currentDrink.blockImg, document.baseURI).href}")`);
+    magnet.style.setProperty("--cup-w", layer.cupW + "%");
+    magnet.style.setProperty("--cup-top", layer.cupTop + "%");
+    magnet.style.setProperty("--cup-left", layer.cupLeft + "%");
+    magnet.style.setProperty("--sc-w", layer.scW + "%");
+    magnet.style.setProperty("--sc-top", layer.scTop + "%");
     playAssemble();
   } else {
     const img = $("#cover-img");
@@ -86,17 +95,15 @@ function applyFrontLayers() {
   }
 }
 
-/* 装配动效：卡片落位后，杯子先落下，咖啡豆逐颗落下（悬浮不做任何调整） */
+/* 装配动效：卡片落位后，杯子先落下，散落元素随后落下（悬浮不做任何调整） */
 function playAssemble() {
-  const cup = $("#m-cup"), beans = $$(".m-bean");
-  [cup, ...beans].forEach((el) => { el.classList.remove("drop"); el.style.animationDelay = ""; });
+  const cup = $("#m-cup"), scatter = $("#m-scatter");
+  [cup, scatter].forEach((el) => { el.classList.remove("drop"); el.style.animationDelay = ""; });
   void cup.offsetWidth;
   cup.style.animationDelay = ".18s";
   cup.classList.add("drop");
-  beans.forEach((b, i) => {
-    b.style.animationDelay = (0.5 + i * 0.08) + "s";
-    b.classList.add("drop");
-  });
+  scatter.style.animationDelay = ".5s";
+  scatter.classList.add("drop");
 }
 
 function renderCaption() {

@@ -71,7 +71,8 @@ const DRINKS = [
   {
     key: "espresso", name: "Espresso", cn: "浓缩",
     cover: "assets/cover_espresso.jpg", accent: "#b0763f", bean: "qinglan",
-    layers: true, block: "#bc3a1d",
+    blockImg: "assets/layer/block_espresso.jpg",
+    layer: { cup: "assets/layer/cup_espresso.png", scatter: "assets/layer/scatter_espresso.png", cupW: 49, cupTop: 7, cupLeft: 50, scW: 74, scTop: 32 },
     params: {
       grams: 12, grind: 4, temp: 93,
       stages: [
@@ -85,6 +86,8 @@ const DRINKS = [
   {
     key: "americano", name: "Americano", cn: "美式",
     cover: "assets/cover_americano.jpg", accent: "#a9814e", bean: "qinglan",
+    blockImg: "assets/layer/block_americano.jpg",
+    layer: { cup: "assets/layer/cup_americano.png", scatter: "assets/layer/scatter_americano.png", cupW: 66, cupTop: 13, cupLeft: 50, scW: 70, scTop: 20 },
     params: {
       grams: 12, grind: 4, temp: 93,
       stages: [
@@ -99,6 +102,8 @@ const DRINKS = [
   {
     key: "lungo", name: "Lungo", cn: "长萃",
     cover: "assets/cover_lungo.jpg", accent: "#c08a3e", bean: "qinglan",
+    blockImg: "assets/layer/block_lungo.jpg",
+    layer: { cup: "assets/layer/cup_lungo.png", scatter: "assets/layer/scatter_lungo.png", cupW: 40, cupTop: 2, cupLeft: 50, scW: 64, scTop: 25 },
     params: {
       grams: 12, grind: 5, temp: 92,
       stages: [
@@ -112,6 +117,8 @@ const DRINKS = [
   {
     key: "latte", name: "Latte", cn: "拿铁",
     cover: "assets/cover_latte.jpg", accent: "#c9a68a", bean: "qinglan",
+    blockImg: "assets/layer/block_latte.jpg",
+    layer: { cup: "assets/layer/cup_latte.png", scatter: "assets/layer/scatter_latte.png", cupW: 70, cupTop: 5, cupLeft: 50, scW: 70, scTop: 20 },
     params: {
       grams: 12, grind: 4, temp: 93,
       stages: [
@@ -126,6 +133,8 @@ const DRINKS = [
   {
     key: "cappuccino", name: "Cappuccino", cn: "卡布奇诺",
     cover: "assets/cover_cappuccino.jpg", accent: "#8a5a3b", bean: "qinglan",
+    blockImg: "assets/layer/block_cappuccino.jpg",
+    layer: { cup: "assets/layer/cup_cappuccino.png", scatter: "assets/layer/scatter_cappuccino.png", cupW: 68, cupTop: 6, cupLeft: 50, scW: 72, scTop: 23 },
     params: {
       grams: 12, grind: 4, temp: 93,
       stages: [
@@ -140,6 +149,8 @@ const DRINKS = [
   {
     key: "macchiato", name: "Macchiato", cn: "玛奇朵",
     cover: "assets/cover_macchiato.jpg", accent: "#9c6b45", bean: "qinglan",
+    blockImg: "assets/layer/block_macchiato.jpg",
+    layer: { cup: "assets/layer/cup_macchiato.png", scatter: "assets/layer/scatter_macchiato.png", cupW: 40, cupTop: 8, cupLeft: 50, scW: 72, scTop: 21, labelBottom: 13.5 },
     params: {
       grams: 12, grind: 4, temp: 93,
       stages: [
@@ -154,6 +165,8 @@ const DRINKS = [
   {
     key: "coldbrew", name: "Cold Brew", cn: "冷萃",
     cover: "assets/cover_coldbrew.jpg", accent: "#5e7482", bean: "qinglan",
+    blockImg: "assets/layer/block_coldbrew.jpg",
+    layer: { cup: "assets/layer/cup_coldbrew.png", scatter: "assets/layer/scatter_coldbrew.png", cupW: 50, cupTop: 1, cupLeft: 50, scW: 68, scTop: 24 },
     params: {
       grams: 12, grind: 6, temp: 20,
       coldBrew: { vol: 200, minutes: 8 },

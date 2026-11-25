@@ -86,20 +86,26 @@ main{padding-top:70px}
 /* ============ 分层磁贴（冰箱贴装配动效） ============ */
 .magnet{position:absolute;inset:0;background:#fff;}
 .m-cup{
-  position:absolute;left:50%;top:7%;width:49%;z-index:1;
+  position:absolute;left:var(--cup-left,50%);top:var(--cup-top,7%);width:var(--cup-w,49%);z-index:1;
   transform:translateX(-50%);
 }
-.m-bean{position:absolute;left:var(--x);top:calc(var(--y) + 3%);width:13.5%;z-index:2;transform:rotate(var(--r));}
-.m-block{position:absolute;left:7%;right:7%;top:46%;bottom:5%;background:var(--block,#bc3a1d);border-radius:18px;}
+.m-scatter{
+  position:absolute;left:50%;top:var(--sc-top,32%);width:var(--sc-w,74%);z-index:2;
+  transform:translateX(-50%);
+}
+.m-block{
+  position:absolute;left:7%;right:7%;top:46%;bottom:5%;border-radius:18px;
+  background:var(--block,#bc3a1d) var(--block-img) center/cover no-repeat;
+}
 
-/* 落下动效：translate 属性与 transform 互不干扰，豆子的旋转角得以保留 */
+/* 落下动效：translate 属性与 transform 互不干扰，水平居中得以保留 */
 @keyframes mCupDrop{
   0%{translate:0 -130%;opacity:0}
   55%{opacity:1;translate:0 5%}
   78%{translate:0 -2.5%}
   100%{translate:0 0;opacity:1}
 }
-@keyframes mBeanDrop{
+@keyframes mScatterDrop{
   0%{translate:0 -170%;opacity:0}
   50%{opacity:1}
   64%{translate:0 7%}
@@ -107,7 +113,7 @@ main{padding-top:70px}
   100%{translate:0 0;opacity:1}
 }
 .m-cup.drop{animation:mCupDrop .55s cubic-bezier(.32,.72,.35,1) backwards;}
-.m-bean.drop{animation:mBeanDrop .5s cubic-bezier(.32,.72,.35,1) backwards;}
+.m-scatter.drop{animation:mScatterDrop .5s cubic-bezier(.32,.72,.35,1) backwards;}
 #cover-img.drop{animation:mCupDrop .55s cubic-bezier(.32,.72,.35,1) backwards;}
 .foil{
   position:absolute;inset:0;pointer-events:none;
@@ -127,7 +133,7 @@ main{padding-top:70px}
 }
 /* 卡片上的饮品标签 */
 .card-label{
-  position:absolute;left:8%;right:8%;bottom:9.5%;z-index:3;pointer-events:none;
+  position:absolute;left:8%;right:8%;bottom:var(--label-bottom,9.5%);z-index:3;pointer-events:none;
   text-align:center;
 }
 .cl-name{

@@ -6,7 +6,7 @@
   GET  /api/queue       定时任务读取队列
 队列与状态以文件形式落在 bridge/ 下，供 Kimi 定时任务消费。
 """
-import json, os, time, uuid
+import argparse, json, os, time, uuid
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -129,4 +129,8 @@ class Handler(SimpleHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    ThreadingHTTPServer(("127.0.0.1", 7100), Handler).serve_forever()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--host", default="127.0.0.1")
+    parser.add_argument("--port", type=int, default=7100)
+    args = parser.parse_args()
+    ThreadingHTTPServer((args.host, args.port), Handler).serve_forever()
