@@ -65,8 +65,38 @@ function switchDrink(i) {
     applyTilt();
     renderCaption();
     renderThumbs();
+    applyFrontLayers();
     requestAnimationFrame(() => requestAnimationFrame(() => card.classList.remove("enter")));
   }, 300);
+}
+
+/* 正面呈现：有 layer 素材的饮品走分层磁贴，其余保持整张封面 */
+function applyFrontLayers() {
+  const layered = !!currentDrink.layers;
+  $("#magnet").hidden = !layered;
+  $("#cover-img").style.display = layered ? "none" : "";
+  if (layered) {
+    $("#magnet").style.setProperty("--block", currentDrink.block || "#bc3a1d");
+    playAssemble();
+  } else {
+    const img = $("#cover-img");
+    img.classList.remove("drop");
+    void img.offsetWidth;
+    img.classList.add("drop");
+  }
+}
+
+/* 装配动效：卡片落位后，杯子先落下，咖啡豆逐颗落下（悬浮不做任何调整） */
+function playAssemble() {
+  const cup = $("#m-cup"), beans = $$(".m-bean");
+  [cup, ...beans].forEach((el) => { el.classList.remove("drop"); el.style.animationDelay = ""; });
+  void cup.offsetWidth;
+  cup.style.animationDelay = ".18s";
+  cup.classList.add("drop");
+  beans.forEach((b, i) => {
+    b.style.animationDelay = (0.5 + i * 0.08) + "s";
+    b.classList.add("drop");
+  });
 }
 
 function renderCaption() {
@@ -721,7 +751,7 @@ $("#btn-save-drink").addEventListener("click", () => {
   currentDrink = DRINKS[currentIndex];
   $("#cover-img").src = currentDrink.cover;
   applyTilt();
-  renderThumbs(); renderCaption();
+  renderThumbs(); renderCaption(); applyFrontLayers();
   $('.nav-btn[data-view="drinks"]').click();
 });
 
@@ -749,6 +779,7 @@ renderCaption();
 renderRecent();
 loadIntoLab(currentDrink);
 applyTilt();
+applyFrontLayers();
 
 /* 调试 / 深链参数：?view=lab|beans&open=1&brew=1&done=1&i=3 */
 const qp = new URLSearchParams(location.search);
@@ -757,7 +788,7 @@ if (qp.get("i") !== null && DRINKS[+qp.get("i")]) {
   currentIndex = +qp.get("i");
   currentDrink = DRINKS[currentIndex];
   $("#cover-img").src = currentDrink.cover;
-  applyTilt(); renderCaption(); renderThumbs();
+  applyTilt(); renderCaption(); renderThumbs(); applyFrontLayers();
 }
 if (qp.get("open") === "1") setTimeout(openSpread, 400);
 if (qp.get("done") === "1") setTimeout(() => showDone(currentDrink, currentDrink.params.time), 400);

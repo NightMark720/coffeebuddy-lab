@@ -71,6 +71,7 @@ const DRINKS = [
   {
     key: "espresso", name: "Espresso", cn: "浓缩",
     cover: "assets/cover_espresso.jpg", accent: "#b0763f", bean: "qinglan",
+    layers: true, block: "#bc3a1d",
     params: {
       grams: 12, grind: 4, temp: 93,
       stages: [

@@ -81,7 +81,34 @@ main{padding-top:70px}
   border-radius:14px;overflow:hidden;
   box-shadow:0 12px 26px -10px rgba(60,40,20,.32),0 2px 7px rgba(60,40,20,.12);
 }
-.face.front img{width:100%;height:100%;object-fit:cover;display:block}
+.face.front #cover-img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* ============ 分层磁贴（冰箱贴装配动效） ============ */
+.magnet{position:absolute;inset:0;background:#fff;}
+.m-cup{
+  position:absolute;left:50%;top:7%;width:49%;z-index:1;
+  transform:translateX(-50%);
+}
+.m-bean{position:absolute;left:var(--x);top:calc(var(--y) + 3%);width:13.5%;z-index:2;transform:rotate(var(--r));}
+.m-block{position:absolute;left:7%;right:7%;top:46%;bottom:5%;background:var(--block,#bc3a1d);border-radius:18px;}
+
+/* 落下动效：translate 属性与 transform 互不干扰，豆子的旋转角得以保留 */
+@keyframes mCupDrop{
+  0%{translate:0 -130%;opacity:0}
+  55%{opacity:1;translate:0 5%}
+  78%{translate:0 -2.5%}
+  100%{translate:0 0;opacity:1}
+}
+@keyframes mBeanDrop{
+  0%{translate:0 -170%;opacity:0}
+  50%{opacity:1}
+  64%{translate:0 7%}
+  82%{translate:0 -3%}
+  100%{translate:0 0;opacity:1}
+}
+.m-cup.drop{animation:mCupDrop .55s cubic-bezier(.32,.72,.35,1) backwards;}
+.m-bean.drop{animation:mBeanDrop .5s cubic-bezier(.32,.72,.35,1) backwards;}
+#cover-img.drop{animation:mCupDrop .55s cubic-bezier(.32,.72,.35,1) backwards;}
 .foil{
   position:absolute;inset:0;pointer-events:none;
   background:linear-gradient(112deg,transparent 38%,rgba(255,255,255,.55) 47%,rgba(255,232,196,.4) 50%,rgba(255,255,255,.25) 53%,transparent 62%);
