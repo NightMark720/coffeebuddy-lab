@@ -31,6 +31,17 @@
 
 **机器硬校验（自定义配方）**：brew_espresso 各段 `volume_ml` 之和 = `target_coffee_yield_ml` + 2 × `grind_beans` 的 grams。
 
+**网络故障处置（实测总结）**：客户端约 15 秒超时，云端偶发响应超时会掐断请求；一次超时还会毒化整个 MCP 会话（随后所有调用报 Not connected，1–2 分钟自愈）。关键推论：**调用超时不等于没送达**，云端可能已受理（迟到落账），start_brew 超售后可能过几分钟真出杯。处置铁律：
+
+| 现象 | 含义 | 处置 |
+|---|---|---|
+| fetch failed / Not connected | 响应丢失或会话断开 | 不猜、不重发，用原幂等键查账 |
+| outcome_unknown | 云端暂无法确认 | 进 10 分钟观察窗，每 1–2 分钟查账 + get_device_context |
+| conflict_in_progress 或 current_task 非空 | **送达铁证** | 转旁观模式：只读跟踪到 idle，不发任何指令 |
+| idle + 渣盒计数 +1 + 锅炉曾升温 | 完成的旁证 | 无 msg_id 也可判定收官 |
+
+预防：写操作前先用 list_devices 轻量读预热会话；两次写间隔 ≥5 秒；单调用 >10 秒视为高风险。
+
 ## 执行器提示词
 
 建每分钟执行的定时任务，粘贴以下内容（无需修改，设备自动发现）：
@@ -60,6 +71,14 @@
 - 若 prepare_brew 返回 invalid_params 或 "Invalid args"（本地 JSON schema 校验错误），说明参数结构被改动坏了：恢复原样结构（套用上面的水量配平规则）后再提交一次；仍失败则立即按失败处理，绝不第三次重试。
 - 若 prepare_brew 返回业务校验错误（ok:false，带 message/details），按 message 修正水量配平后最多重试一次；仍失败按失败处理。
 - status 的 detail 必须原样摘录工具返回的 message 或 blockers 全文，不要自行概括或改写。
+
+【网络与超时纪律】
+- 提交 prepare_brew / start_brew 前，30 秒内先做一次 list_devices 轻量读确认会话活跃；失败则等 30 秒重试，连续两次失败直接退出本轮（任务保持 claimed，下轮再来），不在断线状态提交关键指令。
+- 两次写操作间隔至少 5 秒；单次调用超过 10 秒即高风险，后续动作前先做一次轻量读确认会话未断。
+- 任何调用返回 fetch failed / Not connected / outcome_unknown：绝不重发该调用，用原幂等键 get_command_result 查账（最多 3 次），随后进入最长 10 分钟的观察窗，每 1~2 分钟查账一次并看 get_device_context。
+- 观察中出现 conflict_in_progress 或机器 current_task 非空 = 指令已送达：立即转旁观模式，只读 get_device_context 跟踪（state/current_task/grounds_bin_count/boiler），不再下发任何指令。
+- 收官判定放宽：即使没有 msg_id，只要机器回 idle、渣盒计数 +1、锅炉温度曾明显上升，即可写 {"state":"done","detail":"冲煮完成（旁观判定）"}。
+- 若观察 10 分钟机器无任何动静且查账始终 unknown：status 写 error（detail 注明悬账幂等键），任务归档，提醒用户云端可能迟到，留意机器。
 
 【第 5 步】拿到 proposal 后，status 写 {"state":"brewing","step":"方案已下发"}。立即调用 start_brew：proposal_id 来自上一步，idempotency_key 用另一个新 uuid4。保存返回的 msg_id 和 brew_id。
 
