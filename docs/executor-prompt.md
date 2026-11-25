@@ -45,6 +45,6 @@ DEVICE_ID = 你的设备ID
 
 ## 平台差异备忘
 
-- **Kimi Work**：定时任务（local_conversation，每分钟），工作目录设为项目根。
+- **Kimi Work / WorkBuddy**：用平台自带的定时任务，每分钟执行，工作目录设为项目根；没有工作目录概念的平台，把提示词中的 `bridge/` 相对路径全部替换为项目根的绝对路径。
 - **Codex / 其他 CLI**：用系统 cron 每分钟跑一次非交互执行，见 [`friend-setup.md`](./friend-setup.md) 路径 C。
 - 队列文件 `bridge/queue.jsonl` 和状态 `bridge/status.json` 由 `server.py` 与执行器共同维护，不要手改。
