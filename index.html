@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoffeeBuddy Lab — 饮品 / 调节 / 豆仓</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.cdnfonts.com/css/misans" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">COFFEEBUDDY&nbsp;LAB<span class="mark">+</span></div>
+  <nav class="nav">
+    <button class="nav-btn active" data-view="drinks">饮品</button>
+    <button class="nav-btn" data-view="lab">调节</button>
+    <button class="nav-btn" data-view="beans">豆仓</button>
+  </nav>
+  <div class="machine">
+    <span class="dot" id="machine-dot"></span>
+    <span id="machine-name">光明 17 楼办公室</span>
+    <span class="machine-sub" id="machine-status">在线 · 锅炉 36°C</span>
+  </div>
+</header>
+
+<main>
+  <!-- ============ 饮品 ============ -->
+  <section class="view active" id="view-drinks">
+    <div class="stage" id="stage">
+      <div class="card3d" id="card3d">
+        <div class="card-inner" id="card-inner">
+          <div class="face front" id="card-front">
+            <img id="cover-img" src="assets/cover_espresso.jpg" alt="饮品封面">
+            <div class="foil"></div>
+            <div class="block-shine"></div>
+            <div class="card-label">
+              <div class="cl-name" id="cl-name">Espresso<span>浓缩</span></div>
+              <div class="cl-spec" id="cl-spec"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 翻开后展开的内页 -->
+      <div class="spread" id="spread" aria-hidden="true">
+        <div class="page left">
+          <div class="page-head">BREW&nbsp;PROFILE&nbsp;+</div>
+          <svg id="curve-svg" viewBox="0 0 320 200" preserveAspectRatio="none"></svg>
+          <div class="stage-chips" id="stage-chips"></div>
+          <div class="timeline" id="timeline"></div>
+        </div>
+        <div class="gutter"></div>
+        <div class="page right">
+          <div class="page-head light">RECIPE&nbsp;CARD&nbsp;*</div>
+          <h2 class="drink-name" id="sp-drink-name">Espresso</h2>
+          <div class="drink-cn" id="sp-drink-cn">浓缩</div>
+          <div class="drink-bean" id="sp-drink-bean"></div>
+          <table class="spec" id="sp-spec"></table>
+          <div class="spread-actions">
+            <button class="btn solid" id="btn-brew">真机冲煮</button>
+            <button class="btn line" id="btn-tune">调节参数</button>
+            <button class="btn ghost" id="btn-brew-sim">模拟演示</button>
+            <button class="btn ghost" id="btn-close-spread">合上</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="thumbs" id="thumbs"></div>
+
+    <div class="recent">
+      <div class="recent-head">最近冲煮&nbsp;_</div>
+      <div class="recent-row" id="recent-row"></div>
+    </div>
+  </section>
+
+  <!-- ============ 调节 ============ -->
+  <section class="view" id="view-lab">
+    <div class="lab-grid">
+      <div class="lab-editor">
+        <div class="lab-head">
+          <span>压力曲线编辑器&nbsp;+</span>
+          <span class="lab-hint" id="lab-hint">首段固定 4 bar 预浸 · 静置 ≥ 5 s</span>
+        </div>
+        <svg id="editor-svg" viewBox="0 0 640 340"></svg>
+        <div class="editor-toolbar">
+          <button class="btn line small" id="btn-add-node">添加节点</button>
+          <button class="btn line small" id="btn-reset-curve">重置</button>
+          <span class="editor-note">拖动节点调压 · 双击节点删除</span>
+        </div>
+        <div class="node-vols" id="node-vols"></div>
+      </div>
+      <div class="lab-side">
+        <div class="lab-head"><span>参数&nbsp;*</span></div>
+        <div class="sliders" id="sliders"></div>
+        <div class="spec lab-readout" id="lab-readout"></div>
+        <button class="btn solid wide" id="btn-save-drink">保存为新饮品卡</button>
+        <div class="lab-head" style="margin-top:28px"><span>从现有饮品开始&nbsp;_</span></div>
+        <div class="lab-preset-row" id="lab-presets"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 豆仓 ============ -->
+  <section class="view" id="view-beans">
+    <div class="beans-head">
+      <span>豆仓&nbsp;·&nbsp;<span id="bean-count">3</span>&nbsp;支豆</span>
+      <span class="lab-hint">卡片随冲煮记录自动生成 · 占位卡待真实数据替换</span>
+    </div>
+    <div class="bean-row" id="bean-row"></div>
+  </section>
+</main>
+
+<!-- ============ 冲煮动效遮罩 ============ -->
+<div class="brew-overlay" id="brew-overlay" aria-hidden="true">
+  <div class="brew-box">
+    <div class="brew-top">
+      <span class="brew-title" id="brew-title">Espresso</span>
+      <span class="brew-tag" id="brew-tag">模拟数据</span>
+    </div>
+    <div class="brew-visual">
+      <svg id="brew-curve" viewBox="0 0 640 300" preserveAspectRatio="none"></svg>
+      <div class="cup-wrap">
+        <svg class="cup" viewBox="0 0 80 60" width="72">
+          <path d="M10 12 h48 v26 a14 14 0 0 1 -14 14 h-20 a14 14 0 0 1 -14 -14 z" fill="none" stroke="#111" stroke-width="2"/>
+          <path d="M58 18 h8 a8 8 0 0 1 0 16 h-6" fill="none" stroke="#111" stroke-width="2"/>
+          <path id="cup-fill" d="M14 20 h40 v16 a12 12 0 0 1 -12 12 h-16 a12 12 0 0 1 -12 -12 z" fill="#c98a5e" opacity="0"/>
+        </svg>
+        <div class="steam"><i></i><i></i><i></i></div>
+      </div>
+    </div>
+    <div class="brew-meta">
+      <div class="bm"><label>阶段</label><span id="bm-step">准备中</span></div>
+      <div class="bm"><label>锅炉</label><span id="bm-temp">36.0°C</span></div>
+      <div class="bm"><label>计时</label><span id="bm-time">00:00</span></div>
+    </div>
+    <div class="brew-progress"><i id="brew-bar"></i></div>
+    <button class="btn ghost" id="btn-brew-cancel">取消</button>
+  </div>
+</div>
+
+<!-- ============ 完成卡 / 分享 ============ -->
+<div class="done-overlay" id="done-overlay" aria-hidden="true">
+  <div class="done-card" id="done-card">
+    <div class="done-left">
+      <img id="done-cover" src="assets/cover_espresso.jpg" alt="">
+      <svg class="check" viewBox="0 0 64 64"><circle cx="32" cy="32" r="29"/><path d="M20 33 l8 8 l16 -17"/></svg>
+    </div>
+    <div class="done-right">
+      <div class="page-head light">BREW&nbsp;RECEIPT&nbsp;+</div>
+      <h2 class="drink-name" id="done-name">Espresso</h2>
+      <div class="drink-cn" id="done-cn">萃取完成 · 风味峰值</div>
+      <table class="spec" id="done-spec"></table>
+      <div class="done-share">
+        <div class="qr" id="done-qr"></div>
+        <div class="share-btns">
+          <button class="btn solid small" id="btn-share">分享参数</button>
+          <button class="btn line small" id="btn-copy-recipe">复制配方 JSON</button>
+          <button class="btn ghost small" id="btn-done-close">关闭</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="vendor/qrcode.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
