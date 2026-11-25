@@ -33,3 +33,7 @@ bridge/           运行时队列与状态（不入库）
 ## 配方约束
 
 自定义配方需满足机器校验：浓缩各段水量之和 = 目标液重 + 2 × 粉量（咖啡粉吸水肿胀补偿）。页面提交时已自动配平。
+
+## 分享给朋友
+
+朋友有自己的 Citaly 咖啡机和 CoffeeBuddy 账号就能完整使用（真机冲煮需要任意支持 MCP 的 agent）。上手步骤见 [docs/friend-setup.md](docs/friend-setup.md)，执行器提示词见 [docs/executor-prompt.md](docs/executor-prompt.md)。
