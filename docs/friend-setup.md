@@ -2,6 +2,8 @@
 
 把 CoffeeBuddy Lab 跑在自己的 Citaly 咖啡机上，只需要三步：改配置 → 起服务 → 连 agent。
 
+> 懒人版：直接把 [`docs/install-prompt.md`](./install-prompt.md) 里的提示词粘给你的 agent，全自动部署，只需人工念一次配对码、点一次授权。
+
 ## 第 0 步：改配置（可跳过）
 
 编辑 `js/data.js` 里的 `MACHINE`（设备 ID 在 CoffeeBuddy App「设备信息」页可以看到）。不改也能跑：执行器会自动发现你账号下绑定的咖啡机，多台机器时才需要指定。
