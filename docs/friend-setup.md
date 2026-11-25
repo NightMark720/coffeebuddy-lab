@@ -70,6 +70,25 @@ url = "https://cmap.citaly.com/mcp"
 
 页面体验和路径 B 一致。
 
+### 路径 D：本地 agent 钩子（WorkBuddy / Codex CLI，秒级全自动）
+
+适合 WorkBuddy（CodeBuddy CLI）等定时粒度太粗、但支持非交互执行的平台。**零定时任务，点击后秒级下发**。
+
+1. 完成路径 A 第 1、2 步（MCP 登录 + 绑定机器）
+2. 启用钩子：
+
+```bash
+cp bridge/agent-hook.example.sh bridge/agent-hook.sh
+chmod +x bridge/agent-hook.sh
+```
+
+3. 打开页面点「真机冲煮」→ `server.py` 收到请求后立即唤起本地 agent 执行，进度照常回传页面
+
+注意：
+
+- 钩子与路径 B/C 的定时执行器**二选一**，同时开启可能导致同一任务被重复消费
+- 示例脚本里 `codebuddy -p -y` 的 `-y` 表示跳过执行权限确认，请知悉含义后使用；Codex 用户脚本里有现成备选行
+
 ## 常见问题
 
 - **页面缩略图裂了？** 确认是从仓库完整克隆的，`assets/` 目录在。

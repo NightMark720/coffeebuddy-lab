@@ -103,6 +103,16 @@ class Handler(SimpleHTTPRequestHandler):
             st = read_status()
             st[job["id"]] = {"state": "queued", "at": round(time.time(), 3)}
             write_status(st)
+
+            # 可选：本地 agent 钩子（bridge/agent-hook.sh 存在且可执行时），
+            # 提交后立即唤起 agent 执行，无需定时任务。与定时执行器二选一。
+            hook = os.path.join(BRIDGE, "agent-hook.sh")
+            if os.path.exists(hook) and os.access(hook, os.X_OK):
+                import subprocess
+                with open(os.path.join(BRIDGE, "agent-hook.log"), "ab") as log:
+                    subprocess.Popen([hook, job["id"], ROOT], cwd=ROOT,
+                                     stdout=log, stderr=log, start_new_session=True)
+
             return self._json(200, {"ok": True, "id": job["id"]})
         self._json(404, {"ok": False, "error": "not found"})
 
