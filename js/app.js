@@ -73,19 +73,18 @@ function switchDrink(i) {
 /* 正面呈现：有 layer 素材的饮品走分层磁贴，其余保持整张封面 */
 function applyFrontLayers() {
   const layer = currentDrink.layer;
-  $("#card-front").style.setProperty("--label-bottom", (layer?.labelBottom || 9.5) + "%");
+  const front = $("#card-front");
+  front.style.setProperty("--label-bottom", (layer?.labelBottom || 9.5) + "%");
   $("#magnet").hidden = !layer;
   $("#cover-img").style.display = layer ? "none" : "";
   if (layer) {
-    const magnet = $("#magnet");
+    const box = layer.block || { left: 7, right: 7, top: 46, bottom: 5 };
+    for (const side of ["left", "right", "top", "bottom"]) {
+      front.style.setProperty(`--block-${side}`, box[side] + "%");
+    }
     $("#m-cup").src = layer.cup;
     $("#m-scatter").src = layer.scatter;
-    magnet.style.setProperty("--block-img", `url("${new URL(currentDrink.blockImg, document.baseURI).href}")`);
-    magnet.style.setProperty("--cup-w", layer.cupW + "%");
-    magnet.style.setProperty("--cup-top", layer.cupTop + "%");
-    magnet.style.setProperty("--cup-left", layer.cupLeft + "%");
-    magnet.style.setProperty("--sc-w", layer.scW + "%");
-    magnet.style.setProperty("--sc-top", layer.scTop + "%");
+    front.style.setProperty("--block-img", `url("${new URL(currentDrink.blockImg, document.baseURI).href}")`);
     playAssemble();
   } else {
     const img = $("#cover-img");

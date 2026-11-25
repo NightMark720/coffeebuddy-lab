@@ -85,20 +85,18 @@ main{padding-top:70px}
 
 /* ============ 分层磁贴（冰箱贴装配动效） ============ */
 .magnet{position:absolute;inset:0;background:#fff;}
-.m-cup{
-  position:absolute;left:var(--cup-left,50%);top:var(--cup-top,7%);width:var(--cup-w,49%);z-index:1;
-  transform:translateX(-50%);
+.m-cup,.m-scatter{
+  position:absolute;inset:0;width:100%;height:100%;transform:none;
 }
-.m-scatter{
-  position:absolute;left:50%;top:var(--sc-top,32%);width:var(--sc-w,74%);z-index:2;
-  transform:translateX(-50%);
-}
+.m-cup{z-index:1;}
+.m-scatter{z-index:2;}
 .m-block{
-  position:absolute;left:7%;right:7%;top:46%;bottom:5%;border-radius:18px;
+  position:absolute;left:var(--block-left,7%);right:var(--block-right,7%);
+  top:var(--block-top,46%);bottom:var(--block-bottom,5%);border-radius:18px;
   background:var(--block,#bc3a1d) var(--block-img) center/cover no-repeat;
 }
 
-/* 落下动效：translate 属性与 transform 互不干扰，水平居中得以保留 */
+/* 全幅透明层保留原封面坐标，落下时只改变 translate 与透明度 */
 @keyframes mCupDrop{
   0%{translate:0 -130%;opacity:0}
   55%{opacity:1;translate:0 5%}
@@ -124,7 +122,8 @@ main{padding-top:70px}
 }
 /* 色块区域的反光带 —— 比整卡箔光更强的掠射光泽 */
 .block-shine{
-  position:absolute;left:7%;right:7%;top:46%;bottom:5%;pointer-events:none;
+  position:absolute;left:var(--block-left,7%);right:var(--block-right,7%);
+  top:var(--block-top,46%);bottom:var(--block-bottom,5%);pointer-events:none;
   border-radius:18px;
   background:linear-gradient(115deg,transparent 42%,rgba(255,255,255,.42) 49%,rgba(255,247,228,.34) 52%,transparent 60%);
   background-size:250% 100%;
