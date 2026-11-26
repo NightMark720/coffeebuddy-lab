@@ -1,39 +1,85 @@
 # CoffeeBuddy Lab
 
-Citaly 咖啡机的可视化仪表盘：纯白编辑风 + 冰箱贴风饮品卡片。支持任意 MCP agent（Kimi Work / WorkBuddy / Codex 等）接入真机冲煮，机器自动发现，零写死配置。
+Citaly 咖啡机的可视化仪表盘：纯白瑞士编辑风 + 冰箱贴饮品卡片。支持饮品切换、参数调节、模拟冲煮、豆仓和真机冲煮，可接入 Kimi Work、WorkBuddy、Codex 等支持 MCP 的 agent。
 
-## 功能
+## 当前功能
 
-- **饮品卡片**：CSS 3D 翻卡，封面为锡箔纸压印质感（AI 生成），卡面标注名字与液重
-- **参数调节**：压力曲线 / 粉量 / 研磨度 / 液重 / 温度可视化调节，模拟冲煮动效
-- **豆仓**：咖啡豆风格化卡片
-- **真机冲煮**：页面提交 → 本地队列（`server.py`）→ 定时任务认领 → CoffeeBuddy MCP 执行 → 进度实时回传页面
+- **7 款分层磁贴饮品卡**：卡片 → 杯子 → 散落元素依次落下并回弹；悬浮时主体不动
+- **原封面构图**：杯子与散落元素按原图坐标排布，保留肌理色块与贴纸白边
+- **陶瓷反光**：杯子与散落贴纸带柔和暖白光带，并与主体同步运动
+- **配方卡与参数调节**：查看压力曲线、粉量、研磨度、液重和温度；可编辑并保存为新饮品
+- **模拟冲煮**：展示阶段、温度、计时和萃取曲线，不操作真实机器
+- **豆仓与冲煮记录**：查看咖啡豆卡片、最近冲煮和配方分享二维码
+- **真机冲煮**：页面提交 → 本地队列 → agent 执行 → 机器进度实时回传
 
-## 运行
+## 启动预览
+
+要求：Python 3；使用 `npm run dev` 时另需 Node.js / npm。**无需安装前端依赖。**
+
+在项目根目录运行：
 
 ```bash
-python3 server.py   # 静态服务 + 冲煮队列，http://127.0.0.1:7100
+npm run dev
 ```
 
-真机冲煮需要一个每分钟轮询 `bridge/queue.jsonl` 的执行器（通过 CoffeeBuddy MCP 下发冲煮指令），页面本身只做提交与进度展示。
+或直接运行：
 
-## 结构
-
+```bash
+python3 server.py
 ```
-index.html        页面骨架
-css/style.css     样式（瑞士编辑风 + 冰箱贴卡片）
-js/data.js        饮品/机器数据
-js/app.js         交互、3D 翻卡、模拟动效、真机冲煮提交
-server.py         桥接服务器（静态 + /api/brew /api/status /api/queue）
-assets/           AI 生成封面图
-vendor/           qrcode.min.js
-bridge/           运行时队列与状态（不入库）
+
+打开 <http://127.0.0.1:7100>。自定义监听地址和端口：
+
+```bash
+npm run dev -- --host 127.0.0.1 --port 7101
+# 等价于：python3 server.py --host 127.0.0.1 --port 7101
+```
+
+只用饮品卡、参数调节和模拟冲煮时，不需要配置 MCP 或咖啡机。
+
+## 页面使用
+
+1. **切换饮品**：点击下方缩略图，卡片会按顺序装配杯子与散落元素。
+2. **查看配方**：点击主卡片展开配方页，可查看压力曲线、参数和时间线。
+3. **调节参数**：选择「调节参数」修改曲线和配方，或从顶部「调节」进入编辑器；保存后生成新饮品卡。
+4. **模拟演示**：在配方页点击「模拟演示」，不会操作真实机器。
+5. **真机冲煮**：在配方页点击「真机冲煮」，确认杯子已放好，再按下一节流程执行。
+
+## 真机冲煮
+
+### 当前聊天执行（推荐）
+
+1. 在 agent 中配置 CoffeeBuddy MCP：`https://cmap.citaly.com/mcp`，完成 OAuth 登录并绑定机器。
+2. 保持本地桥接服务运行，在页面配方页点击「真机冲煮」并确认杯子已放好。
+3. 回到当前聊天窗口发送「开始」。agent 会认领 `bridge/queue.jsonl` 中的任务，依次预检、下发方案、启动并回传进度。
+4. 页面显示完成且机器返回完成回执后，再取杯。
+
+机器发现、配方准备和异常查账规则见 [docs/executor-prompt.md](docs/executor-prompt.md)。定时执行、系统 cron 和本地钩子等替代方式见 [docs/friend-setup.md](docs/friend-setup.md)。
+
+> 真机操作前请确认机器在线、空闲、物料充足且杯子已放好。提交结果不确定时只查账，不要重复提交冲煮指令。
+
+## 项目结构
+
+```text
+index.html             页面骨架
+css/style.css          卡片、分层磁贴、陶瓷反光与页面样式
+js/data.js             饮品、机器与色块位置配置
+js/app.js              卡片交互、装配动效、参数编辑与冲煮提交
+server.py              静态服务与冲煮桥接 API
+assets/cover_*.jpg     原饮品封面
+assets/layer/          全幅杯子、散落元素与肌理色块
+scripts/make_layers.py 白底素材转透明贴纸层
+bridge/                运行时队列与状态（不入库）
+docs/                  上手、执行器与交接说明
+vendor/                qrcode.min.js
 ```
 
 ## 配方约束
 
-自定义配方需满足机器校验：浓缩各段水量之和 = 目标液重 + 2 × 粉量（咖啡粉吸水肿胀补偿）。页面提交时已自动配平。
+自定义浓缩配方需满足：各段水量之和 = 目标液重 + 2 × 粉量。页面提交时会自动配平；手动修改配方时也需遵守这一约束。
 
-## 分享给朋友
+## 更多文档
 
-朋友有自己的 Citaly 咖啡机和 CoffeeBuddy 账号就能完整使用（真机冲煮需要任意支持 MCP 的 agent）。上手步骤见 [docs/friend-setup.md](docs/friend-setup.md)，执行器提示词见 [docs/executor-prompt.md](docs/executor-prompt.md)。
+- 朋友部署与其他机器配置：[docs/friend-setup.md](docs/friend-setup.md)
+- 真机执行器协议与故障处理：[docs/executor-prompt.md](docs/executor-prompt.md)
+- 当前版本实现记录：[docs/handoff-2026-11-25.md](docs/handoff-2026-11-25.md)

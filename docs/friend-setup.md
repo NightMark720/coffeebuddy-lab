@@ -11,7 +11,14 @@
 ## 第 1 步：起桥接服务（必做）
 
 ```bash
-python3 server.py   # 打开 http://127.0.0.1:7100
+npm run dev        # 打开 http://127.0.0.1:7100
+# 也可以直接运行：python3 server.py
+```
+
+需要更换端口时：
+
+```bash
+npm run dev -- --host 127.0.0.1 --port 7101
 ```
 
 - 只用卡片 / 参数调节 / 模拟冲煮：到此为止，不用配 agent。
