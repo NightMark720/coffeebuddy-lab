@@ -427,6 +427,30 @@ main{padding-top:70px}
 .qr img,.qr canvas{width:100%!important;height:100%!important;image-rendering:pixelated}
 .share-btns{display:flex;flex-direction:column;gap:8px;flex:1}
 
+/* ---------- 真机确认 & 轻提示（适用于内嵌 WebView） ---------- */
+.confirm-overlay{
+  position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.96);opacity:0;pointer-events:none;transition:opacity .22s;
+}
+.confirm-overlay.open{opacity:1;pointer-events:auto}
+.confirm-card{
+  width:min(420px,90vw);padding:26px 28px;border:1px solid var(--hairline);border-radius:18px;
+  background:#fff;box-shadow:0 28px 70px -28px rgba(60,40,20,.3);
+  transform:translateY(14px);transition:transform .24s cubic-bezier(.22,1,.36,1);
+}
+.confirm-overlay.open .confirm-card{transform:none}
+.confirm-title{font-size:26px;font-weight:400;line-height:1.2}
+.confirm-text{font-size:14px;line-height:1.75;color:var(--ink-soft);margin:16px 0 24px;white-space:pre-line}
+.confirm-actions{display:flex;justify-content:flex-end;gap:10px}
+.confirm-card .btn:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.toast{
+  position:fixed;left:50%;bottom:max(28px,env(safe-area-inset-bottom));z-index:200;
+  max-width:min(520px,90vw);padding:12px 18px;border-radius:999px;background:var(--ink);color:#fff;
+  font-size:12px;line-height:1.6;text-align:center;pointer-events:none;opacity:0;
+  transform:translate(-50%,16px);transition:opacity .22s,transform .22s;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
 /* ---------- 响应式 ---------- */
 @media (max-width:900px){
   .lab-grid{grid-template-columns:1fr}

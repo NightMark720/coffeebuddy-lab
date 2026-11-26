@@ -417,8 +417,56 @@ function customRecipeFromParams(p) {
   return { recipe_name: "CoffeeLab Custom", description: "CoffeeBuddy Lab 仪表盘配方", steps };
 }
 
+let confirmResolve = null;
+let confirmReturnFocus = null;
+let toastTimer = null;
+
+function askRealConfirm(drink) {
+  confirmReturnFocus = document.activeElement;
+  $("#confirm-text").textContent = `即将在「${MACHINE.name}」上冲煮 ${drink.name}（${drink.cn}）。\n请确认杯子已放在出液口下方。\n\n确认后任务进入队列，请在当前聊天发送「开始」执行。`;
+  $("#confirm-overlay").classList.add("open");
+  $("#confirm-overlay").setAttribute("aria-hidden", "false");
+  return new Promise((resolve) => {
+    confirmResolve = resolve;
+    $("#confirm-cancel").focus();
+  });
+}
+
+function settleRealConfirm(value) {
+  if (!confirmResolve) return;
+  const resolve = confirmResolve;
+  confirmResolve = null;
+  $("#confirm-overlay").classList.remove("open");
+  $("#confirm-overlay").setAttribute("aria-hidden", "true");
+  resolve(value);
+  confirmReturnFocus?.focus();
+}
+
+$("#confirm-cancel").addEventListener("click", () => settleRealConfirm(false));
+$("#confirm-accept").addEventListener("click", () => settleRealConfirm(true));
+$("#confirm-overlay").addEventListener("click", (e) => {
+  if (e.target === $("#confirm-overlay")) settleRealConfirm(false);
+});
+$("#confirm-overlay").addEventListener("keydown", (e) => {
+  if (e.key === "Escape") { e.preventDefault(); settleRealConfirm(false); }
+  if (e.key === "Tab") {
+    const items = [$("#confirm-cancel"), $("#confirm-accept")];
+    const at = items.indexOf(document.activeElement);
+    if (e.shiftKey && at === 0) { e.preventDefault(); items[1].focus(); }
+    else if (!e.shiftKey && at === 1) { e.preventDefault(); items[0].focus(); }
+  }
+});
+
+function showToast(message) {
+  clearTimeout(toastTimer);
+  const toast = $("#toast");
+  toast.textContent = message;
+  toast.classList.add("show");
+  toastTimer = setTimeout(() => toast.classList.remove("show"), 4500);
+}
+
 async function brewReal(drink) {
-  const ok = confirm(`即将在「${MACHINE.name}」上冲煮 ${drink.name}（${drink.cn}）。\n\n请确认杯子已放在出液口下方，点击确定提交。`);
+  const ok = await askRealConfirm(drink);
   if (!ok) return;
   closeSpread(true);
 
@@ -439,12 +487,12 @@ async function brewReal(drink) {
     });
     const data = await res.json();
     if (!data.ok) {
-      alert(data.error === "busy" ? "机器忙 —— 已有进行中的冲煮任务" : "提交失败：" + (data.error || ""));
+      showToast(data.error === "busy" ? "机器忙 —— 已有进行中的冲煮任务" : "提交失败：" + (data.error || ""));
       return;
     }
     jobId = data.id;
   } catch {
-    alert("桥接服务未启动 —— 请在项目目录运行 npm run dev");
+    showToast("桥接服务未启动 —— 请在项目目录运行 npm run dev");
     return;
   }
 
@@ -459,7 +507,7 @@ function openRealOverlay(drink, jobId) {
   $("#brew-title").textContent = `${drink.name} · ${drink.cn}`;
   $("#brew-tag").textContent = "真机 · 待开始";
   $("#brew-bar").style.width = "0";
-  $("#bm-step").textContent = "已排队 · 对聊天窗口说「开始」";
+  $("#bm-step").textContent = "请在当前聊天发送「开始」执行";
   $("#bm-temp").textContent = "—";
   $("#bm-time").textContent = "00:00";
   $("#cup-fill").style.opacity = "0";
@@ -509,7 +557,7 @@ function renderBrewCurve(drink, progress) {
 
 function updateRealOverlay(drink, s) {
   const tag = $("#brew-tag"), step = $("#bm-step");
-  if (s.state === "queued") { tag.textContent = "真机 · 待开始"; step.textContent = "已排队 · 对聊天窗口说「开始」"; }
+  if (s.state === "queued") { tag.textContent = "真机 · 待开始"; step.textContent = "请在当前聊天发送「开始」执行"; }
   else if (s.state === "claimed") { tag.textContent = "真机 · 已接单"; step.textContent = "已接单 · 连接机器"; }
   else if (s.state === "preparing") { tag.textContent = "真机"; step.textContent = s.detail || "预备冲煮方案"; }
   else if (s.state === "brewing") {

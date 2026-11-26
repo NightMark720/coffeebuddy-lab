@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <link href="https://fonts.cdnfonts.com/css/misans" rel="stylesheet" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=20261126">
 </head>
 <body>
 
@@ -182,8 +182,22 @@
   </div>
 </div>
 
-<script src="vendor/qrcode.min.js"></script>
-<script src="js/data.js"></script>
-<script src="js/app.js"></script>
+<!-- ============ 真机确认（不依赖 WebView 原生弹窗） ============ -->
+<div class="confirm-overlay" id="confirm-overlay" aria-hidden="true">
+  <div class="confirm-card" role="dialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirm-text">
+    <div class="page-head">REAL BREW&nbsp;*</div>
+    <h2 class="confirm-title" id="confirm-title">确认真机冲煮</h2>
+    <p class="confirm-text" id="confirm-text"></p>
+    <div class="confirm-actions">
+      <button class="btn line" id="confirm-cancel" type="button">取消</button>
+      <button class="btn solid" id="confirm-accept" type="button">确认并入队</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="alert" aria-live="assertive"></div>
+
+<script src="vendor/qrcode.min.js?v=20261126"></script>
+<script src="js/data.js?v=20261126"></script>
+<script src="js/app.js?v=20261126"></script>
 </body>
 </html>

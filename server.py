@@ -6,7 +6,7 @@
   GET  /api/queue       定时任务读取队列
 队列与状态以文件形式落在 bridge/ 下，供 Kimi 定时任务消费。
 """
-import argparse, json, os, time, uuid
+import argparse, json, os, re, time, uuid
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -14,6 +14,17 @@ BRIDGE = os.path.join(ROOT, "bridge")
 QUEUE = os.path.join(BRIDGE, "queue.jsonl")
 STATUS = os.path.join(BRIDGE, "status.json")
 os.makedirs(BRIDGE, exist_ok=True)
+
+
+def default_device_id():
+    """页面未指定设备时，使用 data.js 中 MACHINES 的首项。"""
+    try:
+        with open(os.path.join(ROOT, "js", "data.js"), encoding="utf-8") as f:
+            text = f.read()
+        match = re.search(r'const\s+MACHINES\s*=\s*\[\s*\{\s*id:\s*"([^"]+)"', text, re.S)
+        return match.group(1) if match else None
+    except OSError:
+        return None
 
 
 def read_queue():
@@ -94,7 +105,7 @@ class Handler(SimpleHTTPRequestHandler):
                 "cn": payload.get("cn", "自定义"),
                 "recipeKey": payload.get("recipeKey"),
                 "recipe": payload.get("recipe"),
-                "deviceId": payload.get("deviceId", "C49E7E0C22D8"),
+                "deviceId": payload.get("deviceId") or default_device_id(),
             }
             jobs = read_queue()
             jobs.append(job)
@@ -105,7 +116,7 @@ class Handler(SimpleHTTPRequestHandler):
             write_status(st)
 
             # 可选：本地 agent 钩子（bridge/agent-hook.sh 存在且可执行时），
-            # 提交后立即唤起 agent 执行，无需定时任务。与定时执行器二选一。
+            # 提交后立即唤起 agent 执行；定时执行器检测到钩子会自动让路。
             hook = os.path.join(BRIDGE, "agent-hook.sh")
             if os.path.exists(hook) and os.access(hook, os.X_OK):
                 import subprocess
