@@ -1,20 +1,24 @@
 /* CoffeeBuddy Lab · 数据层
    真实数据来自 coffeebuddy MCP（get_device_context），其余为 mock */
 
-const MACHINE = {
-  id: "C49E7E0C22D8",
-  name: "光明 17 楼办公室",
-  online: true,
-  boiler: { current: 36, target: 88 },
-  caps: {
-    pressure: [1, 12],
-    temp: [85, 98],
-    grams: [5, 14],
-    grind: [1, 7],
-    maxStages: 6,
-    milkMax: 300,
+const MACHINES = [
+  {
+    id: "C49E7E0C22D8",
+    name: "光明 17 楼办公室",
+    online: true,
+    boiler: { current: 36, target: 88 },
+    caps: {
+      pressure: [1, 12],
+      temp: [85, 98],
+      grams: [5, 14],
+      grind: [1, 7],
+      maxStages: 6,
+      milkMax: 300,
+    },
   },
-};
+];
+
+let MACHINE = MACHINES[0];
 
 const BEANS = [
   {

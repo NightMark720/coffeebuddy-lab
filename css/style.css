@@ -39,10 +39,37 @@ button{font-family:inherit;cursor:pointer}
 }
 .nav-btn:hover{color:var(--ink)}
 .nav-btn.active{color:#fff;background:var(--ink)}
+.machine-wrap{position:relative}
 .machine{display:flex;align-items:center;gap:8px;font-size:12px}
 .machine .dot{width:7px;height:7px;border-radius:50%;background:#3fbf6b;box-shadow:0 0 0 3px rgba(63,191,107,.15)}
 .machine .dot.off{background:#c0c0c0;box-shadow:none}
 .machine-sub{color:var(--muted);font-size:11px}
+.machine-trigger{
+  border:1px solid transparent;background:transparent;border-radius:10px;padding:7px 9px;
+  color:var(--ink);transition:background .2s,border-color .2s;
+}
+.machine-trigger:hover{border-color:var(--hairline);background:#fff}
+.machine-trigger:focus-visible,.machine-option:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.machine-trigger:disabled{opacity:.45;cursor:not-allowed}
+.machine-chevron{width:12px;height:8px;fill:none;stroke:currentColor;stroke-width:1.4;transition:transform .2s}
+.machine-trigger[aria-expanded="true"] .machine-chevron{transform:rotate(180deg)}
+.machine-menu{
+  position:absolute;top:calc(100% + 10px);right:0;z-index:60;width:240px;
+  padding:10px;border:1px solid var(--hairline);border-radius:12px;background:#fff;
+  box-shadow:0 16px 36px -18px rgba(30,20,10,.35);
+}
+.machine-menu[hidden]{display:none}
+.machine-menu-label{font-size:9px;letter-spacing:.18em;color:var(--muted);padding:4px 7px 9px}
+.machine-option{
+  display:flex;align-items:center;gap:9px;width:100%;padding:10px 8px;
+  border:none;border-radius:8px;background:transparent;text-align:left;color:var(--ink);
+}
+.machine-option:hover{background:var(--cream)}
+.machine-option .option-dot{width:7px;height:7px;border-radius:50%;background:#c0c0c0;flex:none}
+.machine-option .option-dot.online{background:#3fbf6b}
+.machine-option .option-state{margin-left:auto;font-size:10px;color:var(--muted)}
+.machine-option[aria-checked="true"]{background:var(--cream)}
+.machine-option[aria-checked="true"] .option-state{color:var(--ink)}
 
 /* ---------- 视图切换 ---------- */
 main{padding-top:70px}

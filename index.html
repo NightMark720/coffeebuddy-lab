@@ -7,8 +7,8 @@
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link href="https://fonts.cdnfonts.com/css/misans" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<link href="https://fonts.cdnfonts.com/css/misans" rel="stylesheet" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -20,10 +20,17 @@
     <button class="nav-btn" data-view="lab">调节</button>
     <button class="nav-btn" data-view="beans">豆仓</button>
   </nav>
-  <div class="machine">
-    <span class="dot" id="machine-dot"></span>
-    <span id="machine-name">光明 17 楼办公室</span>
-    <span class="machine-sub" id="machine-status">在线 · 锅炉 36°C</span>
+  <div class="machine-wrap" id="machine-control">
+    <button class="machine machine-trigger" id="machine-trigger" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="machine-menu">
+      <span class="dot" id="machine-dot"></span>
+      <span id="machine-name">光明 17 楼办公室</span>
+      <span class="machine-sub" id="machine-status">在线 · 锅炉 36°C</span>
+      <svg class="machine-chevron" viewBox="0 0 12 8" aria-hidden="true"><path d="m2 2 4 4 4-4"/></svg>
+    </button>
+    <div class="machine-menu" id="machine-menu" role="menu" hidden>
+      <div class="machine-menu-label">切换机器</div>
+      <div id="machine-options"></div>
+    </div>
   </div>
 </header>
 

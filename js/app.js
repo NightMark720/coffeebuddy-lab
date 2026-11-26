@@ -8,6 +8,64 @@ const NS = "http://www.w3.org/2000/svg";
 let currentDrink = DRINKS[0];
 let currentIndex = 0;
 
+/* ============ 机器切换 ============ */
+const MACHINE_KEY = "coffeelab_machine_v1";
+try {
+  const saved = localStorage.getItem(MACHINE_KEY);
+  if (MACHINES.some((m) => m.id === saved)) MACHINE = MACHINES.find((m) => m.id === saved);
+} catch { /* 隐私模式下使用默认机器 */ }
+
+function closeMachineMenu(returnFocus = false) {
+  $("#machine-menu").hidden = true;
+  $("#machine-trigger").setAttribute("aria-expanded", "false");
+  if (returnFocus) $("#machine-trigger").focus();
+}
+
+function renderMachineMenu() {
+  $("#machine-name").textContent = MACHINE.name;
+  $("#machine-status").textContent = `${MACHINE.online ? "在线" : "离线"} · 锅炉 ${MACHINE.boiler.current}°C`;
+  $("#machine-dot").classList.toggle("off", !MACHINE.online);
+  $("#machine-options").innerHTML = MACHINES.map((m) => `
+    <button class="machine-option" type="button" role="menuitemradio" aria-checked="${m.id === MACHINE.id}" data-id="${m.id}">
+      <span class="option-dot ${m.online ? "online" : ""}"></span>
+      <span>${m.name}</span>
+      <span class="option-state">${m.id === MACHINE.id ? "当前" : (m.online ? "在线" : "离线")}</span>
+    </button>`).join("");
+  $$(".machine-option").forEach((btn) => btn.addEventListener("click", () => {
+    if (realJob) return;
+    const next = MACHINES.find((m) => m.id === btn.dataset.id);
+    if (!next) return;
+    MACHINE = next;
+    try { localStorage.setItem(MACHINE_KEY, MACHINE.id); } catch {}
+    renderMachineMenu();
+    closeMachineMenu(true);
+  }));
+}
+
+$("#machine-trigger").addEventListener("click", () => {
+  const menu = $("#machine-menu");
+  if (menu.hidden) {
+    menu.hidden = false;
+    $("#machine-trigger").setAttribute("aria-expanded", "true");
+    $(".machine-option[aria-checked='true']")?.focus();
+  } else {
+    closeMachineMenu();
+  }
+});
+document.addEventListener("click", (e) => {
+  if (!e.target.closest("#machine-control")) closeMachineMenu();
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && !$("#machine-menu").hidden) closeMachineMenu(true);
+});
+$("#machine-menu").addEventListener("keydown", (e) => {
+  if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(e.key)) return;
+  e.preventDefault();
+  const items = $$(".machine-option"), at = items.indexOf(document.activeElement);
+  const next = e.key === "Home" ? 0 : e.key === "End" ? items.length - 1 : (at + (e.key === "ArrowDown" ? 1 : -1) + items.length) % items.length;
+  items[next]?.focus();
+});
+
 /* ============ 视图切换 ============ */
 $$(".nav-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
@@ -394,7 +452,10 @@ async function brewReal(drink) {
 }
 
 function openRealOverlay(drink, jobId) {
-  realJob = { id: jobId, drink, started: Date.now() };
+  realJob = { id: jobId, drink, started: Date.now(), deviceId: MACHINE.id };
+  $("#machine-trigger").disabled = true;
+  $("#machine-trigger").title = "当前冲煮完成后可切换机器";
+  closeMachineMenu();
   $("#brew-title").textContent = `${drink.name} · ${drink.cn}`;
   $("#brew-tag").textContent = "真机 · 待开始";
   $("#brew-bar").style.width = "0";
@@ -483,6 +544,8 @@ function pollReal(jobId) {
           $("#btn-brew-cancel").textContent = "取消";
           showDone(drink, s.elapsed ?? drink.params.time);
           realJob = null;
+          $("#machine-trigger").disabled = false;
+          $("#machine-trigger").title = "";
         }, 900);
       } else if (s.state === "error") {
         clearInterval(pollTimer);
@@ -490,6 +553,8 @@ function pollReal(jobId) {
         $("#brew-tag").textContent = "错误";
         $("#btn-brew-cancel").textContent = "关闭";
         realJob = null;
+        $("#machine-trigger").disabled = false;
+        $("#machine-trigger").title = "";
       } else {
         updateRealOverlay(drink, s);
       }
@@ -782,6 +847,7 @@ function renderLab() {
 }
 
 /* ============ 初始化 ============ */
+renderMachineMenu();
 renderThumbs();
 renderCaption();
 renderRecent();
